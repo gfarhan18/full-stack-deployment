@@ -128,10 +128,12 @@ The browser sends an `Origin` header that must **exactly** match `FRONTEND_URL` 
    - Must be `https`
    - **No** trailing `/`
    - Include `www` only if Vercel uses it (usually it does not)
-3. Railway → **Variables** → set:
-   ```
-   FRONTEND_URL=https://full-stack-deployment.vercel.app
-   ```
+3. Railway → **Variables** → add variable:
+   - **Name:** `FRONTEND_URL`
+   - **Value:** `https://full-stack-deployment-iota.vercel.app` (your real Vercel URL only — do **not** include `FRONTEND_URL=` in the value)
+
+   Wrong value (breaks CORS): `FRONTEND_URL=https://....vercel.app`  
+   Correct value: `https://....vercel.app`
 4. Redeploy Railway (variable changes trigger redeploy).
 5. Check: open `https://YOUR-RAILWAY-URL/api/health` — `cors.allowedOrigins` should list your Vercel URL.
 

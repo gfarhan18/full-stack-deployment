@@ -8,7 +8,11 @@ function normalizeOrigin(value) {
   let trimmed = value.trim();
   // Railway/Vercel UI sometimes saves values with quotes
   trimmed = trimmed.replace(/^['"]+|['"]+$/g, '');
+  // Common mistake: pasting "FRONTEND_URL=https://..." into the value field
+  trimmed = trimmed.replace(/^FRONTEND_URL\s*=\s*/i, '');
   if (!trimmed) return null;
+  // Must look like an origin (scheme + host), not a bare hostname
+  if (!/^https?:\/\//i.test(trimmed)) return null;
   return trimmed.replace(/\/+$/, '');
 }
 
