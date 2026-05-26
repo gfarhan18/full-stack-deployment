@@ -117,7 +117,33 @@ If you get 500 errors, open **Deployments** → latest deploy → **View Logs**.
 | Build fails “no package.json” | Set **Root Directory** to `backend` |
 | App crashes on start | Check logs; verify `SUPABASE_*` vars |
 | 502 Bad Gateway | Wait for deploy; confirm `npm start` runs (`node src/index.js`) |
-| CORS error from browser | Set `FRONTEND_URL` to exact Vercel URL (Step 5) |
+| CORS error from browser | See **CORS troubleshooting** below |
+
+### CORS troubleshooting (production)
+
+The browser sends an `Origin` header that must **exactly** match `FRONTEND_URL` on Railway.
+
+1. Open your **live Vercel site** in the browser (not Railway).
+2. Copy the URL from the address bar, e.g. `https://full-stack-deployment.vercel.app`
+   - Must be `https`
+   - **No** trailing `/`
+   - Include `www` only if Vercel uses it (usually it does not)
+3. Railway → **Variables** → set:
+   ```
+   FRONTEND_URL=https://full-stack-deployment.vercel.app
+   ```
+4. Redeploy Railway (variable changes trigger redeploy).
+5. Check: open `https://YOUR-RAILWAY-URL/api/health` — `cors.allowedOrigins` should list your Vercel URL.
+
+**Preview deployments** (URLs like `https://project-abc123.vercel.app`):
+
+Either add each URL to `FRONTEND_URL` (comma-separated), or set:
+
+```
+ALLOW_VERCEL_PREVIEWS=true
+```
+
+**Still failing?** In DevTools → Network → failed request → compare **Request URL** (API) with `VITE_API_URL` on Vercel (no trailing slash, must be Railway HTTPS URL).
 
 ---
 
