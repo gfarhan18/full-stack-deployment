@@ -76,11 +76,36 @@ function hostnameMatchesAllowlist(origin) {
 export function isOriginAllowed(origin) {
   if (!origin) return true;
   const normalized = normalizeOrigin(origin);
+
+  // Production: any https *.vercel.app (covers -iota, preview, and production URLs)
+  if (process.env.NODE_ENV === 'production' && isVercelPreview(normalized)) {
+    return true;
+  }
+
   if (allowedOrigins.includes(normalized)) return true;
   if (hostnameMatchesAllowlist(normalized)) return true;
   if (allowVercelPreviews && isVercelPreview(normalized)) return true;
   if (allowAnyVercelIfConfigured && isVercelPreview(normalized)) return true;
   return false;
+}
+
+/** Always set CORS headers when origin is allowed (fixes missing header on 200 responses). */
+export function corsHeadersMiddleware(req, res, next) {
+  const origin = req.headers.origin;
+
+  if (origin && isOriginAllowed(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Max-Age', '86400');
+  }
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+
+  next();
 }
 
 export function getAllowedOrigins() {

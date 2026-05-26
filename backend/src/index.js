@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import {
+  corsHeadersMiddleware,
   getAllowedOrigins,
   getCorsOptions,
   isOriginAllowed,
@@ -12,7 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const corsOptions = getCorsOptions();
 
-// Handle preflight before other middleware
+app.use(corsHeadersMiddleware);
 app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 

@@ -59,6 +59,12 @@ export default function App() {
             API: <code>{API_URL}</code>
           </p>
         )}
+        {typeof window !== 'undefined' && (
+          <p className="api-hint">
+            Origin (set as Railway <code>FRONTEND_URL</code>):{' '}
+            <code>{window.location.origin}</code>
+          </p>
+        )}
       </header>
 
       {error && (
